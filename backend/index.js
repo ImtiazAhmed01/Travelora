@@ -243,7 +243,59 @@ async function run() {
                 res.status(500).json({ message: "Error fetching user role", error: error.message });
             }
         });
-        
+        app.put('/update-user', async (req, res) => {
+            try {
+                console.log("✅ PUT /update-user reached!");
+                const updatedData = req.body;
+
+                if (!updatedData.email) {
+                    return res.status(400).json({ message: 'Email is required for update' });
+                }
+                if (!updatedData.userRole) {
+                    return res.status(400).json({ message: 'User role is required for update' });
+                }
+
+                const allowedFields = ['firstName', 'lastName', 'photoURL', 'age', 'address', 'phone', 'availability', 'preferredDestination'];
+                const updateFields = {};
+                allowedFields.forEach(field => {
+                    if (updatedData[field] !== undefined) {
+                        updateFields[field] = updatedData[field];
+                    }
+                });
+
+                if (updateFields.availability && !['Available', 'Booked'].includes(updateFields.availability)) {
+                    return res.status(400).json({ message: 'Invalid availability option' });
+                }
+
+                const database = client.db("traveloraIJSA");
+
+                let collection = database.collection("users");
+
+                // Try tourguides collection if role is Tour guide
+                if (updatedData.userRole === 'Tour guide') {
+                    const guideExists = await database.collection("tourguides").findOne({ email: updatedData.email.trim().toLowerCase() });
+                    if (guideExists) {
+                        collection = database.collection("tourguides");
+                    }
+                }
+
+                const result = await collection.findOneAndUpdate(
+                    { email: updatedData.email.trim().toLowerCase() },
+                    { $set: updateFields },
+                    { returnDocument: 'after' }
+                );
+
+                if (!result.value) {
+                    return res.status(404).json({ message: `User with email ${updatedData.email} not found in ${collection.collectionName}` });
+                }
+
+
+                res.json(result.value);
+            } catch (err) {
+                console.error('Update user error:', err);
+                res.status(500).json({ message: 'Internal Server Error' });
+            }
+        });        
  app.post('/guideapplication', async (req, res) => {
             try {
                 console.log('Request received:', req.body); // Log the entire request
