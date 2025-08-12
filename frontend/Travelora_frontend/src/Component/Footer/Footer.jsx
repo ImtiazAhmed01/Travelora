@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import logo from '../../assets/icon/travel-bag.png'
+// import logo from '../../assets/icon/travel-bag.png'
 import { useNavigate } from 'react-router-dom';
 const Footer = () => {
     const navigate = useNavigate();
@@ -9,7 +9,7 @@ const Footer = () => {
     }
     return (
         <footer className="footer footer-center bg-black text-white rounded p-10">
-            <h1 className='text-3xl font-extrabold'> <img src={logo} alt="" />Travelora</h1>
+            <h1 className='text-3xl font-extrabold'> Travelora</h1>
             <nav className="grid grid-flow-col gap-4">
                 <a className="link link-hover" onClick={aboutUs}>About us</a>
                 <a className="link link-hover" onClick={() => setIsModalOpen(true)}>Privacy Polcy</a>

@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+// const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 const app = express();
@@ -182,6 +182,220 @@ async function run() {
             } catch (error) {
                 console.error("Error deleting user:", error.message);
                 res.status(500).json({ message: "Failed to delete user.", error: error.message });
+            }
+        });
+
+        app.get('/tourguides/all', async (req, res) => {
+            try {
+                const database = client.db("traveloraIJSA");
+                const collection = database.collection("tourguides");
+
+                const packages = await collection.find({}).toArray();
+                res.send(packages)
+
+            } catch (error) {
+                console.error("Error fetching tour guides:", error);
+                res.status(500).send({ message: "Failed to fetch tour guides" });
+            }
+        });
+ 
+ 
+        app.get('/users/role', async (req, res) => {
+            try {
+                const { email } = req.query;
+                if (!email) {
+                    return res.status(400).json({ message: "Email is required" });
+                }
+
+                const database = client.db("traveloraIJSA");
+                const collection = database.collection("users");
+
+                const user = await collection.findOne({ email });
+                if (!user) {
+                    return res.status(404).json({ message: "User not found" });
+                }
+
+                res.status(200).json({ role: user.userRole || 'Tourist' }); // Default role if none found
+            } catch (error) {
+                console.error("Error fetching user role:", error);
+                res.status(500).json({ message: "Error fetching user role", error: error.message });
+            }
+        });
+        
+         app.get('/users/role', async (req, res) => {
+            try {
+                const { email } = req.query;
+                if (!email) {
+                    return res.status(400).json({ message: "Email is required" });
+                }
+
+                const database = client.db("traveloraIJSA");
+                const collection = database.collection("users");
+
+                const user = await collection.findOne({ email });
+                if (!user) {
+                    return res.status(404).json({ message: "User not found" });
+                }
+
+                res.status(200).json({ role: user.userRole || 'Tourist' }); // Default role if none found
+            } catch (error) {
+                console.error("Error fetching user role:", error);
+                res.status(500).json({ message: "Error fetching user role", error: error.message });
+            }
+        });
+        
+ app.post('/guideapplication', async (req, res) => {
+            try {
+                console.log('Request received:', req.body); // Log the entire request
+
+                const {
+                    title,
+                    reason,
+                    cvLink,
+                    name,
+                    email,
+                    userRole,
+                    image,
+                    age,
+                    experience,
+                    languages,
+                    speciality,
+                    gender,
+                } = req.body;
+
+                console.log('Parsed data:', {
+                    title,
+                    reason,
+                    cvLink,
+                    name,
+                    email,
+                    userRole,
+                    image,
+                    age,
+                    experience,
+                    languages,
+                    speciality,
+                    gender,
+                });
+
+                if (!title || !reason || !cvLink || !name || !email) {
+                    console.error('Missing required fields');
+                    return res.status(400).json({ message: 'Missing required fields' });
+                }
+
+                const guideApplication = {
+                    title,
+                    reason,
+                    cvLink,
+                    name,
+                    email,
+                    userRole,
+                    image,
+                    age: parseInt(age, 10),
+                    experience,
+                    speciality,
+                    languages: Array.isArray(languages) ? languages : languages.split(','),
+                    gender,
+                    status: 'pending',
+                    createdAt: new Date(),
+                };
+
+                console.log('Guide application to save:', guideApplication);
+
+                const database = client.db('traveloraIJSA');
+                const collection = database.collection('guideApplications');
+                const result = await collection.insertOne(guideApplication);
+
+                if (result.acknowledged) {
+                    console.log('Application added successfully:', result);
+                    res.status(200).json({ message: 'Application added successfully', guideApplication });
+                } else {
+                    console.error('Database insert failed:', result);
+                    res.status(500).json({ message: 'Failed to add application' });
+                }
+            } catch (error) {
+                console.error('Error adding application:', error.message);
+                res.status(500).json({ message: 'Error adding application', error: error.message });
+            }
+        });
+
+
+        app.get('/guideapplications', async (req, res) => {
+            try {
+                const database = client.db('traveloraIJSA');
+                const collection = database.collection('guideApplications');
+
+                // Fetch all applications
+                const applications = await collection.find().toArray();
+
+                if (applications.length > 0) {
+                    console.log('Applications fetched successfully:', applications);
+                    res.status(200).json(applications);
+                } else {
+                    console.log('No applications found');
+                    res.status(404).json({ message: 'No applications found' });
+                }
+            } catch (error) {
+                console.error('Error fetching applications:', error.message);
+                res.status(500).json({ message: 'Error fetching applications', error: error.message });
+            }
+        });
+        app.post('/manageApplication', async (req, res) => {
+            try {
+                const { applicationId, action } = req.body;
+
+                if (!applicationId || !action) {
+                    return res.status(400).json({ message: 'Application ID and action are required' });
+                }
+
+                const database = client.db('traveloraIJSA');
+                const applicationsCollection = database.collection('guideApplications');
+                const tourGuidesCollection = database.collection('tourguides');
+                const usersCollection = database.collection('users'); // Reference to the users collection
+
+                // Fetch the application by ID
+                const application = await applicationsCollection.findOne({ _id: new ObjectId(applicationId) });
+
+                if (!application) {
+                    return res.status(404).json({ message: 'Application not found' });
+                }
+
+                if (action === 'accept') {
+                    const guide = {
+                        guide_id: new ObjectId().toString(), // Generate a unique guide ID
+                        name: application.name,
+                        age: application.age,
+                        gender: application.gender,
+                        languages: application.languages,
+                        experience: application.experience,
+                        speciality: application.speciality,
+                        rating: 0,
+                        availability: 'Available',
+                        img: application.image,
+                        email: application.email,
+                        userRole: 'Tour Guide',
+                    };
+
+                    await tourGuidesCollection.insertOne(guide);
+
+                    await usersCollection.updateOne(
+                        { email: application.email },
+                        { $set: { userRole: 'Tour guide' } }
+                    );
+
+                    await applicationsCollection.deleteOne({ _id: new ObjectId(applicationId) });
+
+                    return res.status(200).json({ message: 'Application accepted, guide added, userRole updated, and application removed' });
+                } else if (action === 'reject') {
+                    await applicationsCollection.deleteOne({ _id: new ObjectId(applicationId) });
+
+                    return res.status(200).json({ message: 'Application rejected and removed' });
+                } else {
+                    return res.status(400).json({ message: 'Invalid action' });
+                }
+            } catch (error) {
+                console.error('Error managing application:', error.message);
+                res.status(500).json({ message: 'Error managing application', error: error.message });
             }
         });
 
