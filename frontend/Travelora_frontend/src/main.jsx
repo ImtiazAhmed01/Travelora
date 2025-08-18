@@ -1,14 +1,3 @@
-// import { StrictMode } from 'react'
-// import { createRoot } from 'react-dom/client'
-// import './index.css'
-// import App from './App.jsx'
-
-// createRoot(document.getElementById('root')).render(
-//   <StrictMode>
-//     <App />
-//   </StrictMode>,
-// )
-
 
 
 import { StrictMode } from 'react'
@@ -30,7 +19,8 @@ import JoinAsTourGuide from './Component/Tourist/JoinAsTourGuide'
 import GuideProfile from './Component/TourGuide/GuideProfile'
 import ManageUsers from './Component/Admin/ManageUsers'
 import ManageCandidate from './Component/Admin/ManageCandidate'
-
+import AllTripsPage from './Component/AllTripsPage/AllTripsPage'
+import PackageDetails from './Component/PackageDetails/PackageDetails'
 
 
 // const stripePromise = loadStripe('pk_test_51QjKgaAwC1fImaEQKbRyeHqq3iw3ufeIP1FU4awqUbJeavujVfjrOmIsnFtx5Rb98KteM18htlYTO4caZztCMqkA00G1ifOgo6');
@@ -55,7 +45,11 @@ const router = createBrowserRouter([
       }, {
         path: '/alltirpspages',
         element: <AllTripsPage></AllTripsPage>
-      }
+      },
+      {
+        path: "/packages/:id",
+        element: <PackageDetails></PackageDetails>
+      },
 
 
     ]
