@@ -21,7 +21,7 @@ import ManageUsers from './Component/Admin/ManageUsers'
 import ManageCandidate from './Component/Admin/ManageCandidate'
 import AllTripsPage from './Component/AllTripsPage/AllTripsPage'
 import PackageDetails from './Component/PackageDetails/PackageDetails'
-
+import AddPackage from './Component/Admin/AddPackage'
 
 // const stripePromise = loadStripe('pk_test_51QjKgaAwC1fImaEQKbRyeHqq3iw3ufeIP1FU4awqUbJeavujVfjrOmIsnFtx5Rb98KteM18htlYTO4caZztCMqkA00G1ifOgo6');
 
