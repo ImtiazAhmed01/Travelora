@@ -198,8 +198,8 @@ async function run() {
                 res.status(500).send({ message: "Failed to fetch tour guides" });
             }
         });
- 
- 
+
+
         app.get('/users/role', async (req, res) => {
             try {
                 const { email } = req.query;
@@ -221,8 +221,8 @@ async function run() {
                 res.status(500).json({ message: "Error fetching user role", error: error.message });
             }
         });
-        
-         app.get('/users/role', async (req, res) => {
+
+        app.get('/users/role', async (req, res) => {
             try {
                 const { email } = req.query;
                 if (!email) {
@@ -295,8 +295,8 @@ async function run() {
                 console.error('Update user error:', err);
                 res.status(500).json({ message: 'Internal Server Error' });
             }
-        });        
- app.post('/guideapplication', async (req, res) => {
+        });
+        app.post('/guideapplication', async (req, res) => {
             try {
                 console.log('Request received:', req.body);
 
@@ -447,6 +447,169 @@ async function run() {
                 res.status(500).json({ message: 'Error managing application', error: error.message });
             }
         });
+        app.get('/ourpackages', async (req, res) => {
+            try {
+                const database = client.db("traveloraIJSA");
+                const collection = database.collection("ourpackages");
+                const packages = await collection.aggregate([{ $sample: { size: 3 } }]).toArray(); // Fetch random 3 packages
+                res.send(packages);
+            } catch (error) {
+                console.error("Error fetching random packages:", error);
+                res.status(500).send({ message: "Failed to fetch random packages" });
+            }
+        });
+
+        app.get('/ourpackages/allpackages', async (req, res) => {
+            try {
+                const database = client.db("traveloraIJSA");
+                const collection = database.collection("ourpackages");
+                const packages = await collection.find({}).toArray(); // Fetch all packages
+                res.send(packages);
+            } catch (error) {
+                console.error("Error fetching all packages:", error);
+                res.status(500).send({ message: "Failed to fetch all packages" });
+            }
+        });
+        app.get('/ourpackages/:id', async (req, res) => {
+            try {
+                const { id } = req.params;
+                if (!ObjectId.isValid(id)) {
+                    return res.status(400).send({ message: "Invalid package ID" });
+                }
+
+                const database = client.db("traveloraIJSA");
+                const collection = database.collection("ourpackages");
+                const packageDetails = await collection.findOne({ _id: new ObjectId(id) });
+
+                if (!packageDetails) {
+                    return res.status(404).send({ message: "Package not found" });
+                }
+
+                res.send(packageDetails);
+            } catch (error) {
+                console.error("Error fetching package details:", error);
+                res.status(500).send({ message: "Failed to fetch package details" });
+            }
+        });
+        app.post('/ourpackages', async (req, res) => {
+            try {
+                const packageData = req.body;
+                const db = client.db('traveloraIJSA')
+
+                const collection = db.collection('ourpackages');
+
+                const result = await collection.insertOne(packageData);
+                res.status(201).json({ success: true, data: result });
+            } catch (error) {
+                console.error('Error saving package:', error.message);
+                res.status(500).json({ success: false, message: 'Failed to save package.' });
+            }
+        });
+        app.get('/tourguides', async (req, res) => {
+            try {
+                const database = client.db("traveloraIJSA");
+                const collection = database.collection("tourguides");
+
+                // Use aggregation to get 6 random tour guides
+                const guides = await collection.aggregate([{ $sample: { size: 6 } }]).toArray();
+
+                // Check if guides exist
+                if (!guides || guides.length === 0) {
+                    return res.status(404).send({ message: "No tour guides found" });
+                }
+
+                // Send the response
+                res.send(guides);
+            } catch (error) {
+                console.error("Error fetching tour guides:", error);
+                res.status(500).send({ message: "Failed to fetch tour guides" });
+            }
+        });
+        app.get('/tourguides/all', async (req, res) => {
+            try {
+                const database = client.db("traveloraIJSA");
+                const collection = database.collection("tourguides");
+
+                const packages = await collection.find({}).toArray();
+                res.send(packages)
+
+            } catch (error) {
+                console.error("Error fetching tour guides:", error);
+                res.status(500).send({ message: "Failed to fetch tour guides" });
+            }
+        });
+
+        app.post('/bookings', async (req, res) => {
+            try {
+                const { packageId, packageName, touristName, touristEmail, touristImage, price, tourDate, guideName } = req.body;
+
+                console.log("Received booking data:", req.body);
+
+                if (!packageId || !packageName || !touristName || !touristEmail || !price || !tourDate || !guideName) {
+                    return res.status(400).send({ message: "All fields are required" });
+                }
+
+                const database = client.db("traveloraIJSA");
+                const collection = database.collection("bookings");
+
+                const booking = {
+                    packageId,
+                    packageName,
+                    touristName,
+                    touristEmail,
+                    touristImage,
+                    price,
+                    tourDate,
+                    guideName,
+                    status: "pending",
+                    createdAt: new Date(),
+                };
+
+                const result = await collection.insertOne(booking);
+                console.log("Booking stored in database:", result.insertedId);
+                res.send({ message: "Booking successful", bookingId: result.insertedId });
+            } catch (error) {
+                console.error("Error creating booking:", error);
+                res.status(500).send({ message: "Failed to create booking" });
+            }
+        });
+
+        app.post('/reviews', async (req, res) => {
+            try {
+                const review = req.body;
+                const db = client.db("traveloraIJSA");
+                const result = await db.collection("reviews").insertOne(review);
+                res.status(201).json(result);
+            } catch (error) {
+                console.error("Error saving review:", error);
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
+        app.get('/reviews', async (req, res) => {
+            try {
+                const { packageName, limit = 5, skip = 0 } = req.query;
+                const db = client.db("traveloraIJSA");
+
+                const query = packageName ? { packageName: { $regex: new RegExp(packageName, 'i') } } : {};
+                const parsedLimit = parseInt(limit);
+                const parsedSkip = parseInt(skip);
+
+                const reviews = await db.collection("reviews")
+                    .find(query)
+                    .sort({ timestamp: -1 })
+                    .skip(parsedSkip)
+                    .limit(parsedLimit)
+                    .toArray();
+
+                const totalCount = await db.collection("reviews").countDocuments(query);
+
+                res.json({ reviews, totalCount });
+            } catch (err) {
+                console.error("Failed to get reviews:", err);
+                res.status(500).json({ message: 'Server Error' });
+            }
+        });
+
 
     }
     catch (error) {

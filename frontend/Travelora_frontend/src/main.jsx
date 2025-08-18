@@ -1,14 +1,3 @@
-// import { StrictMode } from 'react'
-// import { createRoot } from 'react-dom/client'
-// import './index.css'
-// import App from './App.jsx'
-
-// createRoot(document.getElementById('root')).render(
-//   <StrictMode>
-//     <App />
-//   </StrictMode>,
-// )
-
 
 
 import { StrictMode } from 'react'
@@ -30,7 +19,8 @@ import JoinAsTourGuide from './Component/Tourist/JoinAsTourGuide'
 import GuideProfile from './Component/TourGuide/GuideProfile'
 import ManageUsers from './Component/Admin/ManageUsers'
 import ManageCandidate from './Component/Admin/ManageCandidate'
-
+import AllTripsPage from './Component/AllTripsPage/AllTripsPage'
+import PackageDetails from './Component/PackageDetails/PackageDetails'
 
 
 // const stripePromise = loadStripe('pk_test_51QjKgaAwC1fImaEQKbRyeHqq3iw3ufeIP1FU4awqUbJeavujVfjrOmIsnFtx5Rb98KteM18htlYTO4caZztCMqkA00G1ifOgo6');
@@ -48,19 +38,26 @@ const router = createBrowserRouter([
         path: 'register',
         element: <Register></Register>
       },
-      
+
       {
         path: 'login',
         element: <Login></Login>
+      }, {
+        path: '/alltirpspages',
+        element: <AllTripsPage></AllTripsPage>
       },
-      
-      
+      {
+        path: "/packages/:id",
+        element: <PackageDetails></PackageDetails>
+      },
+
+
     ]
   },
   {
     path: '/',
     element: <Layout2></Layout2>,
-  
+
     children: [
       {
         path: "/dashboard/tourist",
@@ -74,13 +71,13 @@ const router = createBrowserRouter([
         path: '/dashboard/tourist/joinguide',
         element: <JoinAsTourGuide></JoinAsTourGuide>
       },
-      
+
       {
         path: "dashboard/tourguide",
         element: <ProtectedRoute allowedRoles={['Tour Guide']}><TourGuideDashboard></TourGuideDashboard></ProtectedRoute>
       },
-     
-     
+
+
       {
         path: "dashboard/admin",
         element: <ProtectedRoute allowedRoles={['Admin']}><AdminDashboard></AdminDashboard></ProtectedRoute>
@@ -93,7 +90,10 @@ const router = createBrowserRouter([
         path: 'dashboard/admin/managecandidate',
         element: <ManageCandidate></ManageCandidate>
       },
-     
+{
+        path: 'dashboard/admin/addpackage',
+        element: <AddPackage></AddPackage>
+      },
     ]
 
 
@@ -103,9 +103,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AuthProvider>
-     
-        <RouterProvider router={router}></RouterProvider>
-     
+
+      <RouterProvider router={router}></RouterProvider>
+
     </AuthProvider>
   </StrictMode>
 )
