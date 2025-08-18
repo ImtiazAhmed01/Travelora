@@ -215,7 +215,7 @@ async function run() {
                     return res.status(404).json({ message: "User not found" });
                 }
 
-                res.status(200).json({ role: user.userRole || 'Tourist' }); // Default role if none found
+                res.status(200).json({ role: user.userRole || 'Tourist' }); 
             } catch (error) {
                 console.error("Error fetching user role:", error);
                 res.status(500).json({ message: "Error fetching user role", error: error.message });
@@ -298,7 +298,7 @@ async function run() {
         });        
  app.post('/guideapplication', async (req, res) => {
             try {
-                console.log('Request received:', req.body); // Log the entire request
+                console.log('Request received:', req.body);
 
                 const {
                     title,
@@ -377,7 +377,6 @@ async function run() {
                 const database = client.db('traveloraIJSA');
                 const collection = database.collection('guideApplications');
 
-                // Fetch all applications
                 const applications = await collection.find().toArray();
 
                 if (applications.length > 0) {
@@ -403,9 +402,7 @@ async function run() {
                 const database = client.db('traveloraIJSA');
                 const applicationsCollection = database.collection('guideApplications');
                 const tourGuidesCollection = database.collection('tourguides');
-                const usersCollection = database.collection('users'); // Reference to the users collection
-
-                // Fetch the application by ID
+                const usersCollection = database.collection('users'); 
                 const application = await applicationsCollection.findOne({ _id: new ObjectId(applicationId) });
 
                 if (!application) {
@@ -414,7 +411,7 @@ async function run() {
 
                 if (action === 'accept') {
                     const guide = {
-                        guide_id: new ObjectId().toString(), // Generate a unique guide ID
+                        guide_id: new ObjectId().toString(), 
                         name: application.name,
                         age: application.age,
                         gender: application.gender,
