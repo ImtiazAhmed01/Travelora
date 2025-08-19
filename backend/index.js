@@ -610,6 +610,168 @@ async function run() {
                 res.status(500).json({ message: 'Server Error' });
             }
         });
+          app.patch("/bookings/:id", async (req, res) => {
+            try {
+                const database = client.db("traveloraIJSA");
+                const bookingsCollection = database.collection("bookings");
+                const { id } = req.params;
+                const { status } = req.body;
+
+                console.log("Updating booking:", id, "to status:", status);
+
+                if (!status) {
+                    return res.status(400).send({ message: "Status is required" });
+                }
+
+                const result = await bookingsCollection.updateOne(
+                    { _id: new ObjectId(id) },
+                    { $set: { status } }
+                );
+
+                if (result.modifiedCount === 0) {
+                    return res.status(404).send({ message: "Booking not found or status already updated" });
+                }
+
+                res.send({ message: "Status updated successfully" });
+            } catch (error) {
+                console.error("Error updating status:", error);
+                res.status(500).send({ message: "Failed to update status" });
+            }
+        });
+        
+        app.delete("/bookings/:id", async (req, res) => {
+            try {
+                const database = client.db("traveloraIJSA");
+                const bookingsCollection = database.collection("bookings");
+                const { id } = req.params;
+
+                console.log("Deleting booking:", id);
+
+                const result = await bookingsCollection.deleteOne({ _id: new ObjectId(id) });
+
+                if (result.deletedCount === 0) {
+                    return res.status(404).send({ message: "Booking not found" });
+                }
+
+                res.send({ message: "Booking deleted successfully" });
+            } catch (error) {
+                console.error("Error deleting booking:", error);
+                res.status(500).send({ message: "Failed to delete booking" });
+            }
+        });
+          app.patch('/bookings/:id', async (req, res) => {
+            const { id } = req.params;
+            const { status } = req.body;
+
+            try {
+                const database = client.db("traveloraIJSA");
+                const bookingsCollection = database.collection("bookings");
+
+                const result = await bookingsCollection.updateOne(
+                    { _id: new ObjectId(id) },
+                    { $set: { status } }
+                );
+
+                res.json(result);
+            } catch (error) {
+                console.error('Error updating booking:', error.message);
+                res.status(500).json({ error: error.message });
+            }
+        });
+
+             app.get('/bookings/:id', async (req, res) => {
+            try {
+                const bookingId = req.params.id;
+
+                const database = client.db('traveloraIJSA');
+                const bookings = database.collection('bookings');
+
+                // Convert to ObjectId if _id is ObjectId
+                const { ObjectId } = require('mongodb');
+
+                const booking = await bookings.findOne({ _id: new ObjectId(bookingId) });
+
+                if (!booking) {
+                    return res.status(404).json({ message: 'Booking not found' });
+                }
+
+                res.json(booking);
+            } catch (error) {
+                console.error('Error fetching booking:', error.message);
+                res.status(500).json({ message: 'Internal Server Error' });
+            }
+        });
+
+        
+        app.post('/create-payment-intent', async (req, res) => {
+            const { amount, bookingId } = req.body;
+
+            try {
+                if (!amount || amount <= 0) {
+                    return res.status(400).json({ error: 'Invalid amount' });
+                }
+
+                const paymentIntent = await stripe.paymentIntents.create({
+                    amount, // Amount in cents
+                    currency: 'usd',
+                });
+
+                // Save payment transaction to the database
+                const database = client.db("traveloraIJSA");
+                const paymentsCollection = database.collection("payments");
+                await paymentsCollection.insertOne({
+                    paymentIntentId: paymentIntent.id,
+                    bookingId,
+                    amount,
+                    status: 'pending',
+                    createdAt: new Date(),
+                });
+
+                // Return the client secret to the frontend
+                res.json({ clientSecret: paymentIntent.client_secret });
+            } catch (error) {
+                console.error('Error creating payment intent:', error.message);
+                res.status(500).json({ error: error.message });
+            }
+        });
+
+        
+        app.post('/adminReview/copy/:packageId', async (req, res) => {
+            try {
+                const { packageId } = req.params;
+                const { userName, userEmail } = req.body;
+
+                const database = client.db('traveloraIJSA');
+                const collection = database.collection('ourpackages');
+                const adminReviewCollection = database.collection('adminReview');
+
+                if (!ObjectId.isValid(packageId)) {
+                    return res.status(400).json({ message: 'Invalid package ID format' });
+                }
+
+                const originalPackage = await collection.findOne({ _id: new ObjectId(packageId) });
+
+                if (!originalPackage) {
+                    return res.status(404).json({ message: 'Package not found' });
+                }
+
+                // Remove original _id to avoid duplication
+                const { _id, ...copyPackage } = originalPackage;
+
+                // Attach user info
+                copyPackage.userName = userName;
+                copyPackage.userEmail = userEmail;
+                copyPackage.packageId = packageId;
+
+                const result = await adminReviewCollection.insertOne(copyPackage);
+
+                res.status(200).json({ message: 'Package copied to adminReview', result });
+            } catch (error) {
+                console.error('Error copying package:', error);
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
+
 
 
     }
