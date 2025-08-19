@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
+
 const Reviews = ({ packageName }) => {
     const [reviews, setReviews] = useState([]);
     const [page, setPage] = useState(1);
@@ -25,9 +26,9 @@ const Reviews = ({ packageName }) => {
                 console.error('Error fetching reviews:', err);
             }
         };
-
         fetchReviews();
     }, [packageName, page]);
+
 
     const totalPages = Math.ceil(totalCount / limit);
 
@@ -71,6 +72,7 @@ const Reviews = ({ packageName }) => {
                         onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
                         disabled={page === totalPages}
                     >
+
                         Next
                     </button>
                 </div>
