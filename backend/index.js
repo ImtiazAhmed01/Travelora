@@ -581,10 +581,11 @@ async function run() {
                 const result = await db.collection("reviews").insertOne(review);
                 res.status(201).json(result);
             } catch (error) {
-                console.error("Error saving review:", error);
+                console.error("Error saving review in database:", error);
                 res.status(500).json({ message: 'Internal server error' });
             }
         });
+
         app.get('/reviews', async (req, res) => {
             try {
                 const { packageName, limit = 5, skip = 0 } = req.query;
