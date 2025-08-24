@@ -18,17 +18,23 @@ const AllTripsPage = () => {
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
+    // ✅ Format date to "DD-MonthName" (e.g., 25-August)
+    const formatDate = (dateStr) => {
+        if (!dateStr) return "";
+        const date = new Date(dateStr);
+        const options = { day: "2-digit", month: "long" };
+        return date.toLocaleDateString("en-US", options).replace(" ", "-");
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Step 1: Log user context
                 console.log("👤 AuthContext user:", user);
 
                 let fetchedUser = null;
 
                 if (user?.email) {
                     const userRes = await fetch(`http://localhost:5000/users?email=${user.email}`);
-                    //const userRes = await fetch(`http://localhost:5000/users/${user.email}`);
                     if (!userRes.ok) throw new Error('Failed to fetch user info');
                     fetchedUser = await userRes.json();
                     console.log("✅ Fetched userData:", fetchedUser);
@@ -40,7 +46,6 @@ const AllTripsPage = () => {
                 const packageData = await packageRes.json();
                 console.log("📦 All fetched packages:", packageData);
 
-                // Step 4: Sort by preferred destination
                 if (fetchedUser?.preferredDestination) {
                     const preferred = fetchedUser.preferredDestination.trim().toLowerCase();
                     const matching = packageData.filter(pkg =>
@@ -69,14 +74,14 @@ const AllTripsPage = () => {
         }
     }, [user]);
 
-    // Live filtering
     useEffect(() => {
         applyFilters();
     }, [searchTerm, filter]);
 
     const applyFilters = () => {
         const results = packages.filter(pkg => {
-            const keywordMatch = pkg.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            const keywordMatch =
+                pkg.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 pkg.tourtype?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 pkg.highlights?.join(' ').toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -85,7 +90,11 @@ const AllTripsPage = () => {
                 (!filter.maxPrice || pkg.price <= parseInt(filter.maxPrice));
 
             const durationMatch = !filter.duration || pkg.duration.includes(filter.duration);
-            const dateMatch = !filter.travelDate || pkg.dates?.some(date => date.includes(filter.travelDate));
+
+            // ✅ Date filtering with "DD-MonthName"
+            const dateMatch = !filter.travelDate || pkg.dates?.some(date =>
+                formatDate(date).toLowerCase().includes(filter.travelDate.toLowerCase())
+            );
 
             return keywordMatch && priceMatch && durationMatch && dateMatch;
         });
@@ -138,7 +147,7 @@ const AllTripsPage = () => {
 
                 {/* Packages */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {filteredPackages.map((pkg, index) => (
+                    {filteredPackages.map((pkg) => (
                         <div
                             key={pkg._id}
                             className="package-card bg-white shadow-lg rounded-lg p-4"
@@ -151,6 +160,14 @@ const AllTripsPage = () => {
                             <h3 className="text-xl font-bold mt-4">{pkg.name}</h3>
                             <p className="text-gray-700 mt-2">{pkg.tourtype}</p>
                             <p className="text-gray-700 mt-2">Country: {pkg.country}</p>
+
+                            {/* ✅ Show formatted dates */}
+                            {pkg.dates && (
+                                <p className="text-gray-600 mt-2">
+                                    Dates: {pkg.dates.map(d => formatDate(d)).join(", ")}
+                                </p>
+                            )}
+
                             <p className="text-lg font-semibold text-[#3F0113] mt-4">
                                 Price: ${pkg.price}
                             </p>
@@ -164,6 +181,65 @@ const AllTripsPage = () => {
                     ))}
                 </div>
             </div>
+
+            {/* Filter Modal */}
+            {isFilterModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
+                        <h3 className="text-xl font-bold mb-4">Filter Trips</h3>
+
+                        <div className="space-y-3">
+                            <input
+                                type="number"
+                                placeholder="Min Price"
+                                value={filter.minPrice}
+                                onChange={(e) => setFilter({ ...filter, minPrice: e.target.value })}
+                                className="w-full border p-2 rounded"
+                            />
+                            <input
+                                type="number"
+                                placeholder="Max Price"
+                                value={filter.maxPrice}
+                                onChange={(e) => setFilter({ ...filter, maxPrice: e.target.value })}
+                                className="w-full border p-2 rounded"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Duration (e.g., 7 days)"
+                                value={filter.duration}
+                                onChange={(e) => setFilter({ ...filter, duration: e.target.value })}
+                                className="w-full border p-2 rounded"
+                            />
+                            {/* ✅ Updated placeholder for DD-MonthName */}
+                            <input
+                                type="text"
+                                placeholder="Travel Date"
+                                value={filter.travelDate}
+                                onChange={(e) => setFilter({ ...filter, travelDate: e.target.value })}
+                                className="w-full border p-2 rounded"
+                            />
+                        </div>
+
+                        <div className="flex justify-end gap-2 mt-6">
+                            <button
+                                onClick={() => setIsFilterModalOpen(false)}
+                                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                            >
+                                Close
+                            </button>
+                            <button
+                                onClick={() => {
+                                    applyFilters();
+                                    setIsFilterModalOpen(false);
+                                }}
+                                className="px-4 py-2 bg-[#3F0113] text-white rounded hover:bg-[#52C960]"
+                            >
+                                Apply Filters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </section>
     );
 };
