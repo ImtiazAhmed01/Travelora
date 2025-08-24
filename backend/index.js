@@ -798,41 +798,43 @@ async function run() {
             }
         });
         
-        app.post('/adminReview/copy/:packageId', async (req, res) => {
-            try {
-                const { packageId } = req.params;
-                const { userName, userEmail } = req.body;
+       app.post('/adminReview/copy/:packageId', async (req, res) => {
+    try {
+        const { packageId } = req.params;
+        const { userName, userEmail } = req.body;
 
-                const database = client.db('traveloraIJSA');
-                const collection = database.collection('ourpackages');
-                const adminReviewCollection = database.collection('adminReview');
+        const database = client.db('traveloraIJSA');
+        const collection = database.collection('ourpackages');
+        const adminReviewCollection = database.collection('adminReview');
 
-                if (!ObjectId.isValid(packageId)) {
-                    return res.status(400).json({ message: 'Invalid package ID format' });
-                }
+        if (!ObjectId.isValid(packageId)) {
+            return res.status(400).json({ message: 'Invalid package ID format' });
+        }
 
-                const originalPackage = await collection.findOne({ _id: new ObjectId(packageId) });
+        const originalPackage = await collection.findOne({ _id: new ObjectId(packageId) });
 
-                if (!originalPackage) {
-                    return res.status(404).json({ message: 'Package not found' });
-                }
+        if (!originalPackage) {
+            return res.status(404).json({ message: 'Package not found' });
+        }
 
-                // Remove original _id to avoid duplication
-                const { _id, ...copyPackage } = originalPackage;
+        // Remove original _id to avoid duplication
+        const { _id, ...copyPackage } = originalPackage;
 
-                // Attach user info
-                copyPackage.userName = userName;
-                copyPackage.userEmail = userEmail;
-                copyPackage.packageId = packageId;
+        // Attach user info + admin status
+        copyPackage.userName = userName;
+        copyPackage.userEmail = userEmail;
+        copyPackage.packageId = packageId;
+        copyPackage.adminStatus = "Pending"; // 👈 New field
 
-                const result = await adminReviewCollection.insertOne(copyPackage);
+        const result = await adminReviewCollection.insertOne(copyPackage);
 
-                res.status(200).json({ message: 'Package copied to adminReview', result });
-            } catch (error) {
-                console.error('Error copying package:', error);
-                res.status(500).json({ message: 'Internal server error' });
-            }
-        });
+        res.status(200).json({ message: 'Package copied to adminReview', result });
+    } catch (error) {
+        console.error('Error copying package:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
         app.get('/adminReview/all', async (req, res) => {
             try {
                 const database = client.db('traveloraIJSA');
