@@ -17,13 +17,18 @@ import Layout2 from './Component/Layout2'
 import TouristManageProfile from './Component/Tourist/TouristManageProfile'
 import JoinAsTourGuide from './Component/Tourist/JoinAsTourGuide'
 import GuideProfile from './Component/TourGuide/GuideProfile'
+import Payment from './Component/Tourist/Payment'
+import { loadStripe } from '@stripe/stripe-js'
+import { Elements } from '@stripe/react-stripe-js'
 import ManageUsers from './Component/Admin/ManageUsers'
 import ManageCandidate from './Component/Admin/ManageCandidate'
 import AllTripsPage from './Component/AllTripsPage/AllTripsPage'
 import PackageDetails from './Component/PackageDetails/PackageDetails'
 import AddPackage from './Component/Admin/AddPackage'
+import MyBooking from './Component/Tourist/MyBooking'
+import TourReview from './Component/Admin/TourReview'
 
-// const stripePromise = loadStripe('pk_test_51QjKgaAwC1fImaEQKbRyeHqq3iw3ufeIP1FU4awqUbJeavujVfjrOmIsnFtx5Rb98KteM18htlYTO4caZztCMqkA00G1ifOgo6');
+const stripePromise = loadStripe('pk_test_51QjKgaAwC1fImaEQKbRyeHqq3iw3ufeIP1FU4awqUbJeavujVfjrOmIsnFtx5Rb98KteM18htlYTO4caZztCMqkA00G1ifOgo6');
 
 const router = createBrowserRouter([
   {
@@ -70,8 +75,16 @@ const router = createBrowserRouter([
       {
         path: '/dashboard/tourist/joinguide',
         element: <JoinAsTourGuide></JoinAsTourGuide>
-      },
+      }, {
 
+        path: "/payment/:id",
+        element: <Payment></Payment>
+
+      },
+      {
+        path: '/dashboard/tourist/myBookings',
+        element: <MyBooking></MyBooking>
+      },
       {
         path: "dashboard/tourguide",
         element: <ProtectedRoute allowedRoles={['Tour Guide']}><TourGuideDashboard></TourGuideDashboard></ProtectedRoute>
@@ -90,10 +103,14 @@ const router = createBrowserRouter([
         path: 'dashboard/admin/managecandidate',
         element: <ManageCandidate></ManageCandidate>
       },
-{
+      {
         path: 'dashboard/admin/addpackage',
         element: <AddPackage></AddPackage>
       },
+      {
+        path: 'dashboard/admin/tourreview',
+        element: <TourReview></TourReview>
+      }
     ]
 
 
@@ -103,9 +120,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AuthProvider>
-
-      <RouterProvider router={router}></RouterProvider>
-
+      <Elements stripe={stripePromise}>
+        <RouterProvider router={router}></RouterProvider>
+      </Elements>
     </AuthProvider>
-  </StrictMode>
+  </StrictMode>,
 )
