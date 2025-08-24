@@ -846,33 +846,42 @@ async function run() {
                 res.status(500).json({ message: 'Internal server error' });
             }
         });
-        app.patch('/adminReview/approve/:packageId', async (req, res) => {
+       app.patch('/adminReview/approve/:packageId', async (req, res) => {
             try {
                 const { packageId } = req.params;
                 const { userEmail, tourDetails } = req.body;
 
                 const database = client.db('traveloraIJSA');
                 const bookingsCollection = database.collection('bookings');
+                const adminReviewCollection = database.collection('adminReview');
 
-                // Update all bookings with matching packageId to Approved (in case of duplicates)
-                const updateResult = await bookingsCollection.updateMany(
+                // 1️⃣ Update bookings (status → Approved)
+                const bookingUpdate = await bookingsCollection.updateMany(
                     { packageId: packageId },
                     { $set: { status: 'Approved' } }
                 );
 
-                if (updateResult.modifiedCount === 0) {
-                    return res.status(404).json({ message: 'No bookings found with this packageId' });
+                // 2️⃣ Update adminReview (adminStatus → Approved)
+                const reviewUpdate = await adminReviewCollection.updateOne(
+                    { packageId: packageId },
+                    { $set: { adminStatus: 'Approved' } }
+                );
+
+                if (bookingUpdate.modifiedCount === 0 && reviewUpdate.modifiedCount === 0) {
+                    return res.status(404).json({ message: 'No records found for this packageId' });
                 }
 
-                
-                res.status(200).json({ message: 'Booking(s) approved successfully' });
+                res.status(200).json({ 
+                    message: 'Booking(s) and adminReview updated successfully',
+                    bookingUpdate,
+                    reviewUpdate
+                });
 
             } catch (error) {
                 console.error('Approval error:', error);
                 res.status(500).json({ message: 'Internal server error' });
             }
         });
-
 
     }
     catch (error) {
