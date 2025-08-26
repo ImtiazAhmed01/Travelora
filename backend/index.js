@@ -882,6 +882,79 @@ async function run() {
                 res.status(500).json({ message: 'Internal server error' });
             }
         });
+        app.get('/admin/payments/total', async (req, res) => {
+            try {
+                const database = client.db("traveloraIJSA");
+                const collection = database.collection("bookings");
+                const totalPayment = await collection.aggregate([
+                    { $group: { _id: null, total: { $sum: "$price" } } }
+                ]).toArray();
+
+                res.json({ totalPayment: totalPayment[0]?.total || 0 });
+            } catch (error) {
+                console.error("Error fetching total payments:", error);
+                res.status(500).json({ message: "Failed to calculate total payments" });
+            }
+        });
+
+        // Endpoint to count total tour guides
+        app.get('/admin/tourguides/count', async (req, res) => {
+            try {
+                const database = client.db("traveloraIJSA");
+                const collection = database.collection("tourguides");
+                const allTourGuides = await collection.find({}).toArray();
+                const totalTourGuides = allTourGuides.length;
+
+                res.json({ totalTourGuides });
+            } catch (error) {
+                console.error('Error fetching total tour guides:', error.message);
+                res.status(500).json({ message: 'Failed to count tour guides' });
+            }
+        });
+
+        // Endpoint to count total packages
+        app.get("/admin/packages/count", async (req, res) => {
+            try {
+                const database = client.db("traveloraIJSA");
+                const collection = database.collection("ourpackages");
+                const allPackages = await collection.find({}).toArray();
+                const totalPackages = allPackages.length;
+
+                res.json({ totalPackages });
+            } catch (error) {
+                console.error("Error fetching total packages:", error);
+                res.status(500).json({ message: "Failed to count packages" });
+            }
+        });
+        app.get('/admin/clients/count', async (req, res) => {
+            try {
+                const database = client.db("traveloraIJSA");
+                const collection = database.collection("users");
+                const allClients = await collection.find({ userRole: "Tourist" }).toArray();
+                const totalClients = allClients.length;
+
+                res.json({ totalClients });
+            } catch (error) {
+                console.error("Error fetching total clients:", error);
+                res.status(500).json({ message: "Failed to count clients" });
+            }
+        });
+
+        // Endpoint to count total stories
+        app.get('/admin/stories/count', async (req, res) => {
+            try {
+                const database = client.db("traveloraIJSA");
+                const collection = database.collection("stories");
+                const allStories = await collection.find({}).toArray();
+                const totalStories = allStories.length;
+
+                res.json({ totalStories });
+            } catch (error) {
+                console.error("Error fetching total stories:", error);
+                res.status(500).json({ message: "Failed to count stories" });
+            }
+        });
+
 
     }
     catch (error) {
