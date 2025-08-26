@@ -820,10 +820,11 @@ async function run() {
                 // Remove original _id to avoid duplication
                 const { _id, ...copyPackage } = originalPackage;
 
-                // Attach user info
+                // Attach user info + admin status
                 copyPackage.userName = userName;
                 copyPackage.userEmail = userEmail;
                 copyPackage.packageId = packageId;
+                copyPackage.adminStatus = "Pending"; // 👈 New field
 
                 const result = await adminReviewCollection.insertOne(copyPackage);
 
@@ -833,6 +834,7 @@ async function run() {
                 res.status(500).json({ message: 'Internal server error' });
             }
         });
+
         app.get('/adminReview/all', async (req, res) => {
             try {
                 const database = client.db('traveloraIJSA');
@@ -880,8 +882,6 @@ async function run() {
                 res.status(500).json({ message: 'Internal server error' });
             }
         });
-
-
 
     }
     catch (error) {

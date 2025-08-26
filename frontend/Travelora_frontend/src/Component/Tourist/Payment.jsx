@@ -84,6 +84,7 @@ const Payment = () => {
                         userName: booking.touristName,
                         userEmail: booking.touristEmail,
                         packageId: booking.packageId,
+                        adminStatus: "Pending"
                     }),
                 });
 
