@@ -12,7 +12,7 @@ const MyBooking = () => {
     const [reviewText, setReviewText] = useState('');
     const [rating, setRating] = useState(5);
     const [countdowns, setCountdowns] = useState({});
-    const abusiveWords = ['bitch', 'fuck', 'shit', 'asshole'];
+    const abusiveWords = ['bitch', 'fuck', 'shit', 'asshole','bitch','harassment', 'bully', 'curse'];
 
     useEffect(() => {
         if (!user?.email) return;
