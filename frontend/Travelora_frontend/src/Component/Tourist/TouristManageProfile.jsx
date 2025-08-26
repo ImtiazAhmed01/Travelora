@@ -3,8 +3,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../Provider/authProvider';
-// import AdminState from '../Admin/AdminState';
-// import Overstate from '../Overstate/Overstate';
+import AdminState from '../Admin/AdminState';
+import Overstate from '../Overstate/Overstate';
 
 const TouristManageProfile = () => {
     const navigate = useNavigate();
@@ -126,7 +126,7 @@ const TouristManageProfile = () => {
                 </div>
             </div>
 
-            {/* {userData?.userRole !== 'Tourist' && userData?.userRole !== 'Tour guide' && <AdminState />} */}
+            {userData?.userRole !== 'Tourist' && userData?.userRole !== 'Tour guide' && <AdminState />}
 
             {isEditModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 mt-20">
@@ -261,7 +261,7 @@ const TouristManageProfile = () => {
             )}
 
             <div>
-                {/* <Overstate /> */}
+                <Overstate />
             </div>
         </div>
     );

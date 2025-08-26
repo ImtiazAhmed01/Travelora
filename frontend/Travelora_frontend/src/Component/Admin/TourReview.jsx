@@ -3,52 +3,20 @@ import emailjs from '@emailjs/browser';
 
 const TourReview = () => {
     const [packages, setPackages] = useState([]);
-    const [statusMap, setStatusMap] = useState({});
 
+    // Fetch all packages from adminReview and use their adminStatus
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const res = await fetch('http://localhost:5000/adminReview/all');
                 const data = await res.json();
-                setPackages(data);
-
-                // Parallel status fetching using Promise.all
-                const statusPromises = data.map(async (pkg) => {
-                    if (!pkg.packageId) return { packageId: pkg.packageId, status: 'Pending' };
-
-                    try {
-                        const res = await fetch(`http://localhost:5000/bookings/packagetour/${pkg.packageId}`);
-                        const booking = await res.json();
-                        return {
-                            packageId: pkg.packageId,
-                            status: booking?.status || 'Pending',
-                        };
-                    } catch (err) {
-                        console.error(`Failed to fetch booking ${pkg.packageId}:`, err);
-                        return {
-                            packageId: pkg.packageId,
-                            status: 'Pending',
-                        };
-                    }
-                });
-
-                const statuses = await Promise.all(statusPromises);
-
-                // Convert array to map
-                const statusMapObj = {};
-                statuses.forEach(({ packageId, status }) => {
-                    statusMapObj[packageId] = status;
-                });
-
-                setStatusMap(statusMapObj);
+                setPackages(data); // Each package now should have adminStatus
             } catch (err) {
-                console.error('Failed to fetch packages or statuses', err);
+                console.error('Failed to fetch packages', err);
             }
         };
-
         fetchData();
     }, []);
-
 
     const formatDate = (dateStr) => {
         if (!dateStr) return 'N/A';
@@ -61,18 +29,13 @@ const TourReview = () => {
     const parseDatesAndDuration = (rangeString) => {
         if (!rangeString || !rangeString.includes('-')) return { start: null, end: null, duration: 'N/A' };
         const [startPart, endPart] = rangeString.split(' - ').map(s => s.trim());
-
         const endYearMatch = endPart.match(/\d{4}$/);
         const year = endYearMatch ? endYearMatch[0] : new Date().getFullYear();
-
         const startDate = new Date(`${startPart} ${year}`);
         const endDate = new Date(endPart);
-
         if (isNaN(startDate) || isNaN(endDate)) return { start: null, end: null, duration: 'N/A' };
-
         const diffDays = Math.round((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
         const duration = `${formatDate(startDate)} - ${formatDate(endDate)} (${diffDays} day${diffDays > 1 ? 's' : ''})`;
-
         return { start: startDate, end: endDate, duration };
     };
 
@@ -104,7 +67,7 @@ const TourReview = () => {
     };
 
     const handleApprove = async (packageId, userEmail, tour) => {
-        if (!packageId) return alert('Missing Booking ID');
+        if (!packageId) return alert('Missing package ID');
 
         try {
             const res = await fetch(`http://localhost:5000/adminReview/approve/${packageId}`, {
@@ -116,7 +79,13 @@ const TourReview = () => {
             if (res.ok) {
                 await sendEmail(tour.userName, userEmail, tour);
                 alert('Approved and email sent!');
-                setStatusMap(prev => ({ ...prev, [packageId]: 'Approved' }));
+
+                // Update local state to reflect new adminStatus
+                setPackages(prev =>
+                    prev.map(pkg =>
+                        pkg.packageId === packageId ? { ...pkg, adminStatus: 'Approved' } : pkg
+                    )
+                );
             } else {
                 alert('Approval failed');
             }
@@ -132,14 +101,14 @@ const TourReview = () => {
                 <p className="text-center text-gray-500">No pending tours for review.</p>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {packages.map((tour) => {
-                        const isApproved = statusMap[tour.packageId] === 'Approved';
+                    {packages.map(tour => {
+                        const isApproved = tour.adminStatus === 'Approved';
                         const firstDateRange = tour.dates?.[0];
                         const { start, end, duration } = parseDatesAndDuration(firstDateRange);
 
                         return (
                             <div key={tour._id} className="border p-4 rounded shadow">
-                                <img src={tour.image} alt={tour.name} className="w-full h-40 object-cover rounded" />
+                                <img src={tour.image?.[0] || '/default-image.jpg'} alt={tour.name} className="w-full h-40 object-cover rounded" />
                                 <h3 className="text-xl font-semibold mt-3">{tour.name}</h3>
                                 <p>Type: {tour.tourtype || 'N/A'}</p>
                                 <p>Price: ${tour.price || 'N/A'}</p>
@@ -150,7 +119,7 @@ const TourReview = () => {
                                 </p>
                                 <button
                                     onClick={() => handleApprove(tour.packageId, tour.userEmail, tour)}
-                                    disabled={!tour.packageId || isApproved}
+                                    disabled={isApproved}
                                     className={`mt-4 px-4 py-2 text-white rounded transition ${isApproved
                                         ? 'bg-gray-500 cursor-not-allowed'
                                         : 'bg-green-600 hover:bg-green-800'

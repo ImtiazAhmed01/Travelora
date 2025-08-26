@@ -215,7 +215,7 @@ async function run() {
                     return res.status(404).json({ message: "User not found" });
                 }
 
-                res.status(200).json({ role: user.userRole || 'Tourist' }); 
+                res.status(200).json({ role: user.userRole || 'Tourist' });
             } catch (error) {
                 console.error("Error fetching user role:", error);
                 res.status(500).json({ message: "Error fetching user role", error: error.message });
@@ -402,7 +402,7 @@ async function run() {
                 const database = client.db('traveloraIJSA');
                 const applicationsCollection = database.collection('guideApplications');
                 const tourGuidesCollection = database.collection('tourguides');
-                const usersCollection = database.collection('users'); 
+                const usersCollection = database.collection('users');
                 const application = await applicationsCollection.findOne({ _id: new ObjectId(applicationId) });
 
                 if (!application) {
@@ -411,7 +411,7 @@ async function run() {
 
                 if (action === 'accept') {
                     const guide = {
-                        guide_id: new ObjectId().toString(), 
+                        guide_id: new ObjectId().toString(),
                         name: application.name,
                         age: application.age,
                         gender: application.gender,
@@ -610,7 +610,7 @@ async function run() {
                 res.status(500).json({ message: 'Server Error' });
             }
         });
-          app.patch("/bookings/:id", async (req, res) => {
+        app.patch("/bookings/:id", async (req, res) => {
             try {
                 const database = client.db("traveloraIJSA");
                 const bookingsCollection = database.collection("bookings");
@@ -638,7 +638,7 @@ async function run() {
                 res.status(500).send({ message: "Failed to update status" });
             }
         });
-        
+
         app.delete("/bookings/:id", async (req, res) => {
             try {
                 const database = client.db("traveloraIJSA");
@@ -745,7 +745,7 @@ async function run() {
                 res.status(500).send({ message: "Failed to fetch bookings." });
             }
         });
-        
+
         app.post('/create-payment-intent', async (req, res) => {
             const { amount, bookingId } = req.body;
 
@@ -797,7 +797,7 @@ async function run() {
                 res.status(500).json({ message: 'Internal Server Error' });
             }
         });
-        
+
         app.post('/adminReview/copy/:packageId', async (req, res) => {
             try {
                 const { packageId } = req.params;
@@ -851,25 +851,36 @@ async function run() {
 
                 const database = client.db('traveloraIJSA');
                 const bookingsCollection = database.collection('bookings');
+                const adminReviewCollection = database.collection('adminReview');
 
-                // Update all bookings with matching packageId to Approved (in case of duplicates)
-                const updateResult = await bookingsCollection.updateMany(
+                // 1️⃣ Update bookings (status → Approved)
+                const bookingUpdate = await bookingsCollection.updateMany(
                     { packageId: packageId },
                     { $set: { status: 'Approved' } }
                 );
 
-                if (updateResult.modifiedCount === 0) {
-                    return res.status(404).json({ message: 'No bookings found with this packageId' });
+                // 2️⃣ Update adminReview (adminStatus → Approved)
+                const reviewUpdate = await adminReviewCollection.updateOne(
+                    { packageId: packageId },
+                    { $set: { adminStatus: 'Approved' } }
+                );
+
+                if (bookingUpdate.modifiedCount === 0 && reviewUpdate.modifiedCount === 0) {
+                    return res.status(404).json({ message: 'No records found for this packageId' });
                 }
 
-                
-                res.status(200).json({ message: 'Booking(s) approved successfully' });
+                res.status(200).json({
+                    message: 'Booking(s) and adminReview updated successfully',
+                    bookingUpdate,
+                    reviewUpdate
+                });
 
             } catch (error) {
                 console.error('Approval error:', error);
                 res.status(500).json({ message: 'Internal server error' });
             }
         });
+
 
 
     }
