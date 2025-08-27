@@ -174,13 +174,12 @@ import emailjs from '@emailjs/browser';
 const TourReview = () => {
     const [packages, setPackages] = useState([]);
 
-    // Fetch all packages from adminReview and use their adminStatus
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const res = await fetch('http://localhost:5000/adminReview/all');
                 const data = await res.json();
-                setPackages(data); // Each package now should have adminStatus
+                setPackages(data); 
             } catch (err) {
                 console.error('Failed to fetch packages', err);
             }
@@ -250,7 +249,6 @@ const TourReview = () => {
                 await sendEmail(tour.userName, userEmail, tour);
                 alert('Approved and email sent!');
 
-                // Update local state to reflect new adminStatus
                 setPackages(prev =>
                     prev.map(pkg =>
                         pkg.packageId === packageId ? { ...pkg, adminStatus: 'Approved' } : pkg

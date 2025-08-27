@@ -91,7 +91,6 @@ const AllTripsPage = () => {
 
             const durationMatch = !filter.duration || pkg.duration.includes(filter.duration);
 
-            // ✅ Date filtering with "DD-MonthName"
             const dateMatch = !filter.travelDate || pkg.dates?.some(date =>
                 formatDate(date).toLowerCase().includes(filter.travelDate.toLowerCase())
             );
@@ -162,11 +161,11 @@ const AllTripsPage = () => {
                             <p className="text-gray-700 mt-2">Country: {pkg.country}</p>
 
                             {/* ✅ Show formatted dates */}
-                            {pkg.dates && (
+                            {/* {pkg.dates && (
                                 <p className="text-gray-600 mt-2">
                                     Dates: {pkg.dates.map(d => formatDate(d)).join(", ")}
                                 </p>
-                            )}
+                            )} */}
 
                             <p className="text-lg font-semibold text-[#3F0113] mt-4">
                                 Price: ${pkg.price}

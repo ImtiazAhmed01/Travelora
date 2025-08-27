@@ -27,7 +27,9 @@ import PackageDetails from './Component/PackageDetails/PackageDetails'
 import AddPackage from './Component/Admin/AddPackage'
 import MyBooking from './Component/Tourist/MyBooking'
 import TourReview from './Component/Admin/TourReview'
-
+import AllTourGuide from './Component/AllTourGuide/AllTourGuide'
+import MyAssignedTours from './Component/Tour Guide/MyAssignedTours'
+import StoriesTG from './Component/Tour Guide/StoriesTG'
 const stripePromise = loadStripe('pk_test_51QjKgaAwC1fImaEQKbRyeHqq3iw3ufeIP1FU4awqUbJeavujVfjrOmIsnFtx5Rb98KteM18htlYTO4caZztCMqkA00G1ifOgo6');
 
 const router = createBrowserRouter([
@@ -54,7 +56,16 @@ const router = createBrowserRouter([
       {
         path: "/packages/:id",
         element: <PackageDetails></PackageDetails>
+      },{
+        path:"/alltourguides",
+        element: <AllTourGuide></AllTourGuide>
       },
+      {
+        
+        path: '/tourguides/:id',
+        element: <GuideProfile></GuideProfile>
+      }
+      
 
 
     ]
