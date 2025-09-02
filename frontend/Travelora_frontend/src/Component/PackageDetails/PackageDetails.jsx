@@ -16,7 +16,7 @@ const PackageDetails = () => {
 
     useEffect(() => {
         console.log("User:", user);
-        fetch(`http://localhost:5000/ourpackages/${id}`)
+        fetch(`https://backend-eight-inky.vercel.app/ourpackages/${id}`)
             .then((res) => res.json())
             .then((data) => {
                 console.log("Fetched package details:", data);
@@ -24,7 +24,7 @@ const PackageDetails = () => {
             })
             .catch((error) => console.error("Error fetching package details:", error));
 
-        fetch("http://localhost:5000/tourguides/all")
+        fetch("https://backend-eight-inky.vercel.app/tourguides/all")
             .then((res) => res.json())
             .then((data) => setTourGuides(data))
             .catch((error) => console.error("Error fetching tour guides:", error));
@@ -46,7 +46,7 @@ const PackageDetails = () => {
             status: "pending",
         };
         console.log("Booking data to send:", bookingData);
-        fetch("http://localhost:5000/bookings", {
+        fetch("https://backend-eight-inky.vercel.app/bookings", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

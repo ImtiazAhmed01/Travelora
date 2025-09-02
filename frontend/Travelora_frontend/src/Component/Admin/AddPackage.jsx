@@ -42,7 +42,7 @@ const AddPackage = () => {
         const newPackage = { ...packageData, packageId };
 
         try {
-            const response = await fetch('http://localhost:5000/ourpackages', {
+            const response = await fetch('https://backend-eight-inky.vercel.app/ourpackages', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

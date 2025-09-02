@@ -75,7 +75,7 @@ const JoinAsTourGuide = () => {
         const fetchUserData = async () => {
             if (user?.email) {
                 try {
-                    const response = await fetch(`http://localhost:5000/users?email=${user.email}`);
+                    const response = await fetch(`https://backend-eight-inky.vercel.app/users?email=${user.email}`);
                     if (!response.ok) throw new Error("Failed to fetch user data");
                     const data = await response.json();
                     setAdditionalData((prev) => ({
@@ -118,7 +118,7 @@ const JoinAsTourGuide = () => {
             };
 
             const response = await axios.post(
-                "http://localhost:5000/guideapplication",
+                "https://backend-eight-inky.vercel.app/guideapplication",
                 transformedData
             );
 

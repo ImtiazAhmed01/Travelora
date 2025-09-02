@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../Provider/authProvider';
+import { motion } from "framer-motion";
 
 const AllTripsPage = () => {
     const [packages, setPackages] = useState([]);
@@ -18,7 +19,6 @@ const AllTripsPage = () => {
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    // ✅ Format date to "DD-MonthName" (e.g., 25-August)
     const formatDate = (dateStr) => {
         if (!dateStr) return "";
         const date = new Date(dateStr);
@@ -34,14 +34,14 @@ const AllTripsPage = () => {
                 let fetchedUser = null;
 
                 if (user?.email) {
-                    const userRes = await fetch(`http://localhost:5000/users?email=${user.email}`);
+                    const userRes = await fetch(`https://backend-eight-inky.vercel.app/users?email=${user.email}`);
                     if (!userRes.ok) throw new Error('Failed to fetch user info');
                     fetchedUser = await userRes.json();
                     console.log("✅ Fetched userData:", fetchedUser);
                     setUserData(fetchedUser);
                 }
 
-                const packageRes = await fetch('http://localhost:5000/ourpackages/allpackages');
+                const packageRes = await fetch('https://backend-eight-inky.vercel.app/ourpackages/allpackages');
                 if (!packageRes.ok) throw new Error('Failed to fetch packages');
                 const packageData = await packageRes.json();
                 console.log("📦 All fetched packages:", packageData);
@@ -91,7 +91,6 @@ const AllTripsPage = () => {
 
             const durationMatch = !filter.duration || pkg.duration.includes(filter.duration);
 
-            // ✅ Date filtering with "DD-MonthName"
             const dateMatch = !filter.travelDate || pkg.dates?.some(date =>
                 formatDate(date).toLowerCase().includes(filter.travelDate.toLowerCase())
             );
@@ -120,6 +119,7 @@ const AllTripsPage = () => {
             <div className="container mx-auto px-4">
                 <h2 className="text-4xl font-bold text-center mb-8">All Trips</h2>
 
+                {/* Search + Filter */}
                 <div className="flex flex-col md:flex-row items-center justify-between mb-6 gap-4">
                     <input
                         type="text"
@@ -145,29 +145,32 @@ const AllTripsPage = () => {
                     </div>
                 </div>
 
-                {/* Packages */}
+                {/* Packages with 3D Animation */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {filteredPackages.map((pkg) => (
-                        <div
+                    {filteredPackages.map((pkg, index) => (
+                        <motion.div
                             key={pkg._id}
-                            className="package-card bg-white shadow-lg rounded-lg p-4"
+                            className="package-card bg-white shadow-lg rounded-lg p-4 transform perspective-1000"
+                            initial={{ opacity: 0, y: 50 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.1, duration: 0.6 }}
+                            whileHover={{
+                                rotateX: 8,
+                                rotateY: -8,
+                                scale: 1.05,
+                                boxShadow: "0px 20px 30px rgba(0,0,0,0.25)",
+                            }}
                         >
-                            <img
+                            <motion.img
                                 src={pkg.image?.[0] || '/default-image.jpg'}
                                 alt={pkg.name}
                                 className="w-full h-48 object-cover rounded-md"
+                                whileHover={{ scale: 1.1 }}
+                                transition={{ duration: 0.3 }}
                             />
                             <h3 className="text-xl font-bold mt-4">{pkg.name}</h3>
                             <p className="text-gray-700 mt-2">{pkg.tourtype}</p>
                             <p className="text-gray-700 mt-2">Country: {pkg.country}</p>
-
-                            {/* ✅ Show formatted dates */}
-                            {pkg.dates && (
-                                <p className="text-gray-600 mt-2">
-                                    Dates: {pkg.dates.map(d => formatDate(d)).join(", ")}
-                                </p>
-                            )}
-
                             <p className="text-lg font-semibold text-[#3F0113] mt-4">
                                 Price: ${pkg.price}
                             </p>
@@ -177,7 +180,7 @@ const AllTripsPage = () => {
                             >
                                 View Details
                             </button>
-                        </div>
+                        </motion.div>
                     ))}
                 </div>
             </div>
@@ -210,7 +213,6 @@ const AllTripsPage = () => {
                                 onChange={(e) => setFilter({ ...filter, duration: e.target.value })}
                                 className="w-full border p-2 rounded"
                             />
-                            {/* ✅ Updated placeholder for DD-MonthName */}
                             <input
                                 type="text"
                                 placeholder="Travel Date"

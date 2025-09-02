@@ -14,7 +14,7 @@ const Navbar = () => {
 
     useEffect(() => {
         if (user) {
-            fetch(`http://localhost:5000/users/role?email=${user.email}`)
+            fetch(`https://backend-eight-inky.vercel.app/users/role?email=${user.email}`)
                 .then((response) => response.json())
                 .then((data) => {
                     console.log("User Role:", data.role);
@@ -60,7 +60,7 @@ const Navbar = () => {
                     Home
                 </NavLink>
             </li>
-            <li className="mx-1">
+            {/* <li className="mx-1">
                 <NavLink
                     to="/community"
                     className={({ isActive }) =>
@@ -69,7 +69,7 @@ const Navbar = () => {
                 >
                     Community
                 </NavLink>
-            </li>
+            </li> */}
             <li className="mx-1">
                 <NavLink
                     to="/aboutus"

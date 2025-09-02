@@ -15,7 +15,7 @@ const Payment = () => {
     useEffect(() => {
         const fetchBooking = async () => {
             try {
-                const res = await fetch(`http://localhost:5000/bookings/${id}`);
+                const res = await fetch(`https://backend-eight-inky.vercel.app/bookings/${id}`);
                 const data = await res.json();
                 setBooking(data);
             } catch (err) {
@@ -33,7 +33,7 @@ const Payment = () => {
         try {
             setIsProcessing(true);
             console.log("Creating payment intent for booking:", booking);
-            const response = await fetch('http://localhost:5000/create-payment-intent', {
+            const response = await fetch('https://backend-eight-inky.vercel.app/create-payment-intent', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ amount: 5000, bookingId: id, packageId: booking.packageId }),
@@ -54,12 +54,12 @@ const Payment = () => {
                 setIsProcessing(false);
             } else if (paymentIntent.status === 'succeeded') {
                 setPaymentStatus('Payment Successful');
-                await fetch(`http://localhost:5000/bookings/${id}`, {
+                await fetch(`https://backend-eight-inky.vercel.app/bookings/${id}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: 'In Review' }),
                 });
-                await fetch(`http://localhost:5000/adminReview/copy/${booking.packageId}`, {
+                await fetch(`https://backend-eight-inky.vercel.app/adminReview/copy/${booking.packageId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

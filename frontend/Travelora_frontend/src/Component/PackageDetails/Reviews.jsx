@@ -17,7 +17,7 @@ const Reviews = ({ packageName }) => {
         const fetchReviews = async () => {
             try {
                 const res = await fetch(
-                    `http://localhost:5000/reviews?packageName=${encodeURIComponent(packageName)}&limit=${limit}&skip=${(page - 1) * limit}`
+                    `https://backend-eight-inky.vercel.app/reviews?packageName=${encodeURIComponent(packageName)}&limit=${limit}&skip=${(page - 1) * limit}`
                 );
                 const data = await res.json();
                 setReviews(data.reviews);

@@ -9,7 +9,7 @@ const ManageCandidate = () => {
 
     const fetchApplications = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/guideapplications');
+            const response = await axios.get('https://backend-eight-inky.vercel.app/guideapplications');
             setApplications(response.data);
         } catch (error) {
             console.error('Error fetching applications:', error.message);
@@ -45,7 +45,7 @@ const ManageCandidate = () => {
                 };
             }
 
-            const response = await axios.post('http://localhost:5000/manageApplication', payload);
+            const response = await axios.post('https://backend-eight-inky.vercel.app/manageApplication', payload);
 
             if (response.status === 200) {
                 Swal.fire({

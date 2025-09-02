@@ -9,7 +9,7 @@ const GuideProfile = () => {
     const [stories, setStories] = useState([]);
 
     useEffect(() => {
-        fetch(`http://localhost:5000/tourguides/${id}`)
+        fetch(`https://backend-eight-inky.vercel.app/tourguides/${id}`)
             .then((response) => response.json())
             .then((data) => {
                 // console.log('Fetched guide data:', data);
@@ -18,7 +18,7 @@ const GuideProfile = () => {
             .catch((error) => console.error('Error fetching guide data:', error));
 
         if (guide && guide.email) {
-            fetch(`http://localhost:5000/stories/guide?email=${guide.email}`)
+            fetch(`https://backend-eight-inky.vercel.app/stories/guide?email=${guide.email}`)
                 .then((response) => response.json())
                 .then((data) => {
                     // console.log('Fetched stories:', data);

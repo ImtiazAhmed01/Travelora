@@ -9,14 +9,14 @@ const TourismAndTravelGuide = () => {
     const [guides, setGuides] = useState([]);
     const navigate = useNavigate();
     useEffect(() => {
-        fetch('http://localhost:5000/ourpackages')
+        fetch('https://backend-eight-inky.vercel.app/ourpackages')
             .then((res) => res.json())
             .then((data) => setPackages(data))
             .catch((error) => console.error("Error fetching packages:", error));
     }, []);
 
     useEffect(() => {
-        fetch(`http://localhost:5000/tourguides`)
+        fetch(`https://backend-eight-inky.vercel.app/tourguides`)
             .then((res) => res.json())
             .then((data) => {
                 console.log(data); // Log data to verify response

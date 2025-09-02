@@ -12,12 +12,12 @@ const MyBooking = () => {
     const [reviewText, setReviewText] = useState('');
     const [rating, setRating] = useState(5);
     const [countdowns, setCountdowns] = useState({});
-    const abusiveWords = ['bitch', 'fuck', 'shit', 'asshole','bitch', 'stupid', 'bully', 'curse'];
+    const abusiveWords = ['bitch', 'fuck', 'shit', 'asshole', 'bitch', 'stupid', 'bully', 'curse'];
 
     useEffect(() => {
         if (!user?.email) return;
 
-        fetch(`http://localhost:5000/bookings?email=${user.email}`)
+        fetch(`https://backend-eight-inky.vercel.app/bookings?email=${user.email}`)
             .then((res) => res.json())
             .then((data) => {
                 if (Array.isArray(data)) {
@@ -96,7 +96,7 @@ const MyBooking = () => {
         if (!confirmed.isConfirmed) return;
 
         try {
-            const res = await fetch(`http://localhost:5000/bookings/${bookingId}`, {
+            const res = await fetch(`https://backend-eight-inky.vercel.app/bookings/${bookingId}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
             });
@@ -104,7 +104,7 @@ const MyBooking = () => {
             if (res.ok) {
                 setBookings((prev) => prev.filter((b) => b._id !== bookingId));
 
-                await fetch('http://localhost:5000/refunds', {
+                await fetch('https://backend-eight-inky.vercel.app/refunds', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -154,7 +154,7 @@ const MyBooking = () => {
         };
 
         try {
-            const res = await fetch('http://localhost:5000/reviews', {
+            const res = await fetch('https://backend-eight-inky.vercel.app/reviews', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(reviewData),

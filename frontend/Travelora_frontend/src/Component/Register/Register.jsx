@@ -37,7 +37,7 @@ const Register = () => {
                     registrationDate: new Date().toISOString(),
                 };
 
-                const serverResponse = await fetch("http://localhost:5000/register", {
+                const serverResponse = await fetch("https://backend-eight-inky.vercel.app/register", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -98,7 +98,7 @@ const Register = () => {
         };
 
         try {
-            const response = await fetch("http://localhost:5000/send-otp", {
+            const response = await fetch("https://backend-eight-inky.vercel.app/send-otp", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -172,7 +172,7 @@ const Register = () => {
                     registrationDate: new Date().toISOString(),
                 };
 
-                const serverResponse = await fetch("http://localhost:5000/register", {
+                const serverResponse = await fetch("https://backend-eight-inky.vercel.app/register", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

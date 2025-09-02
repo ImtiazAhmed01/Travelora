@@ -12,12 +12,12 @@ import { getAuth } from "firebase/auth";
 //     appId: import.meta.env.VITE_appId,
 // };
 const firebaseConfig = {
-    apiKey: "AIzaSyDqwgSpLHKZXyxnXM39qCmLvBx6Who-Ces",
-    authDomain: "imtiaz-tourism-ltd.firebaseapp.com",
-    projectId: "imtiaz-tourism-ltd",
-    storageBucket: "imtiaz-tourism-ltd.firebasestorage.app",
-    messagingSenderId: "1084650346978",
-    appId: "1:1084650346978:web:075f773af36a21515ac1bb"
+    apiKey: "AIzaSyD5xx2jsou4az-Sli7oajqhzpb_ftNg0sk",
+    authDomain: "travelora-535f0.firebaseapp.com",
+    projectId: "travelora-535f0",
+    storageBucket: "travelora-535f0.firebasestorage.app",
+    messagingSenderId: "831670336495",
+    appId: "1:831670336495:web:f108fddb74a41674d4941a"
 };
 
 

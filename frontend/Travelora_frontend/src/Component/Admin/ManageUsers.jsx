@@ -20,8 +20,8 @@
 //         const fetchData = async () => {
 //             try {
 //                 const [usersResponse, tourGuidesResponse] = await Promise.all([
-//                     axios.get('http://localhost:5000/users/all'),
-//                     axios.get('http://localhost:5000/tourguides/all'),
+//                     axios.get('https://backend-eight-inky.vercel.app/users/all'),
+//                     axios.get('https://backend-eight-inky.vercel.app/tourguides/all'),
 //                 ]);
 
 //                 const combined = [
@@ -152,8 +152,8 @@ const ManageUsers = () => {
         const fetchData = async () => {
             try {
                 const [usersResponse, tourGuidesResponse] = await Promise.all([
-                    axios.get('http://localhost:5000/users/all'),
-                    axios.get('http://localhost:5000/tourguides/all'),
+                    axios.get('https://backend-eight-inky.vercel.app/users/all'),
+                    axios.get('https://backend-eight-inky.vercel.app/tourguides/all'),
                 ]);
 
                 const combined = [
@@ -194,7 +194,7 @@ const ManageUsers = () => {
 
     const handleDelete = async (email) => {
         try {
-            await axios.delete(`http://localhost:5000/users/delete`, {
+            await axios.delete(`https://backend-eight-inky.vercel.app/users/delete`, {
                 data: { email },
             });
             setCombinedData((prev) => prev.filter((item) => item.email !== email));

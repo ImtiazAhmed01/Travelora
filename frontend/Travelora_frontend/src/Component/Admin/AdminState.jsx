@@ -11,7 +11,7 @@ const AdminState = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const baseUrl = 'http://localhost:5000/admin';
+                const baseUrl = 'https://backend-eight-inky.vercel.app/admin';
                 const paymentRes = await fetch(`${baseUrl}/payments/total`);
                 const paymentData = await paymentRes.json();
                 setTotalPayment(paymentData.totalPayment || 0);

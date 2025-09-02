@@ -10,7 +10,7 @@ const TouristStorySection = ({ isLoggedIn }) => {
     useEffect(() => {
         const fetchStories = async () => {
             try {
-                const response = await fetch('http://localhost:5000/stories/random'); // Replace with your backend API URL
+                const response = await fetch('https://backend-eight-inky.vercel.app/stories/random'); // Replace with your backend API URL
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }

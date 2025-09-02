@@ -12,7 +12,7 @@ const Overstate = () => {
     });
 
     useEffect(() => {
-        fetch('http://localhost:5000/api/stats')
+        fetch('https://backend-eight-inky.vercel.app/api/stats')
             .then((response) => response.json())
             .then((data) => {
                 setStats(data);

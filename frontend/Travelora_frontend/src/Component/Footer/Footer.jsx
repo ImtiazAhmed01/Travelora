@@ -42,7 +42,7 @@ const Footer = () => {
                 </div>
             </nav>
             <aside>
-                <p>Copyright © {new Date().getFullYear()} - All right reserved by Imtiaz Toursim Ltd</p>
+                <p>Copyright © {new Date().getFullYear()} - All right reserved by Travelora Ltd</p>
             </aside>
 
 

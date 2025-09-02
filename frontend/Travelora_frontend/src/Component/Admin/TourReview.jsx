@@ -7,7 +7,7 @@ const TourReview = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await fetch('http://localhost:5000/adminReview/all');
+                const res = await fetch('https://backend-eight-inky.vercel.app/adminReview/all');
                 const data = await res.json();
                 setPackages(data);
             } catch (err) {
@@ -69,7 +69,7 @@ const TourReview = () => {
         if (!packageId) return alert('Missing package ID');
 
         try {
-            const res = await fetch(`http://localhost:5000/adminReview/approve/${packageId}`, {
+            const res = await fetch(`https://backend-eight-inky.vercel.app/adminReview/approve/${packageId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userEmail, tourDetails: tour }),
@@ -78,6 +78,7 @@ const TourReview = () => {
             if (res.ok) {
                 await sendEmail(tour.userName, userEmail, tour);
                 alert('Approved and email sent!');
+
                 setPackages(prev =>
                     prev.map(pkg =>
                         pkg.packageId === packageId ? { ...pkg, adminStatus: 'Approved' } : pkg
