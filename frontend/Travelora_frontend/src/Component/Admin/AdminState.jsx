@@ -15,28 +15,22 @@ const AdminState = () => {
                 const paymentRes = await fetch(`${baseUrl}/payments/total`);
                 const paymentData = await paymentRes.json();
                 setTotalPayment(paymentData.totalPayment || 0);
-
                 const tourGuideRes = await fetch(`${baseUrl}/tourguides/count`);
                 const tourGuideData = await tourGuideRes.json();
                 setTotalTourGuides(tourGuideData.totalTourGuides || 0);
-
                 const packagesRes = await fetch(`${baseUrl}/packages/count`);
                 const packagesData = await packagesRes.json();
                 setTotalPackages(packagesData.totalPackages || 0);
-
                 const clientsRes = await fetch(`${baseUrl}/clients/count`);
                 const clientsData = await clientsRes.json();
                 setTotalClients(clientsData.totalClients || 0);
-
                 const storiesRes = await fetch(`${baseUrl}/stories/count`);
                 const storiesData = await storiesRes.json();
                 setTotalStories(storiesData.totalStories || 0);
-
             } catch (error) {
                 console.error("Error fetching admin stats:", error);
             }
         };
-
         fetchData();
     }, []);
 

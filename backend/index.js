@@ -882,6 +882,29 @@ async function run() {
                 res.status(500).json({ message: 'Internal server error' });
             }
         });
+        app.get("/api/stats", async (req, res) => {
+            try {
+                const db = client.db("traveloraIJSA");
+
+                // Ensure the count operations are awaited properly
+                const totalUsers = await db.collection('users').countDocuments();
+                const totalTourGuides = await db.collection('tourguides').countDocuments();
+                const totalStories = await db.collection('stories').countDocuments();
+                const totalPackages = await db.collection('ourpackages').countDocuments();
+
+                const stats = {
+                    totalUsers: totalUsers || 0,
+                    totalTourGuides: totalTourGuides || 0,
+                    totalStories: totalStories || 0,
+                    totalPackages: totalPackages || 0,
+                };
+
+                res.json(stats);
+            } catch (error) {
+                console.error("Error fetching stats:", error);
+                res.status(500).json({ error: "Server error" });
+            }
+        });
         app.get('/admin/payments/total', async (req, res) => {
             try {
                 const database = client.db("traveloraIJSA");
@@ -954,6 +977,26 @@ async function run() {
                 res.status(500).json({ message: "Failed to count stories" });
             }
         });
+
+        app.get('/tourguides/:id', async (req, res) => {
+            try {
+                const guideId = req.params.id;
+                const database = client.db('traveloraIJSA');
+                const guidesCollection = database.collection('tourguides');
+
+                const guide = await guidesCollection.findOne({ _id: new ObjectId(guideId) });
+
+                if (!guide) {
+                    return res.status(404).json({ message: 'Guide not found' });
+                }
+
+                res.json(guide);
+            } catch (error) {
+                console.error('Error fetching guide:', error);
+                res.status(500).json({ message: 'Internal Server Error' });
+            }
+        });
+
 
 
     }

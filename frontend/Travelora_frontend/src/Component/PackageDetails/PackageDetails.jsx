@@ -1,5 +1,3 @@
-
-
 import React, { useContext, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import TourPlanSection from "./TourPlanSection";
@@ -14,7 +12,6 @@ const PackageDetails = () => {
     const [selectedDate, setSelectedDate] = useState("");
     const [selectedGuide, setSelectedGuide] = useState("");
     const [showModal, setShowModal] = useState(false);
-
     const { user } = useContext(AuthContext);
 
     useEffect(() => {
@@ -32,13 +29,11 @@ const PackageDetails = () => {
             .then((data) => setTourGuides(data))
             .catch((error) => console.error("Error fetching tour guides:", error));
     }, [id]);
-
     const handleBooking = () => {
         if (!user) {
             navigate("/login");
             return;
         }
-
         const bookingData = {
             packageId: id,
             packageName: packageDetails.name,
@@ -50,9 +45,7 @@ const PackageDetails = () => {
             guideName: selectedGuide,
             status: "pending",
         };
-
         console.log("Booking data to send:", bookingData);
-
         fetch("http://localhost:5000/bookings", {
             method: "POST",
             headers: {
@@ -74,7 +67,6 @@ const PackageDetails = () => {
                 alert("An error occurred while booking. Please try again.");
             });
     };
-
     if (!packageDetails) return <div>Loading...</div>;
 
     return (

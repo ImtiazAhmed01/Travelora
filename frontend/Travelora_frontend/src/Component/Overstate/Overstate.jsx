@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-
-// Register chart components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const Overstate = () => {
@@ -14,15 +12,13 @@ const Overstate = () => {
     });
 
     useEffect(() => {
-        fetch('http://localhost:5000/api/stats')  // Replace with your backend API URL
+        fetch('http://localhost:5000/api/stats')
             .then((response) => response.json())
             .then((data) => {
                 setStats(data);
             })
             .catch((error) => console.error('Error fetching stats:', error));
     }, []);
-
-    // Chart data
     const chartData = {
         labels: ['Users', 'Tour Guides', 'Stories', 'Packages'],
         datasets: [
@@ -35,8 +31,6 @@ const Overstate = () => {
             },
         ],
     };
-
-    // Chart options
     const options = {
         responsive: true,
         plugins: {
@@ -49,7 +43,6 @@ const Overstate = () => {
             },
         },
     };
-
     return (
         <div className="p-4">
             <h2 className="text-2xl mb-4">Overview</h2>
