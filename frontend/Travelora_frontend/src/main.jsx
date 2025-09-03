@@ -31,7 +31,7 @@ import AllTourGuide from './Component/AllTourGuide/AllTourGuide'
 import MyAssignedTours from './Component/Tour Guide/MyAssignedTours'
 import StoriesTG from './Component/Tour Guide/StoriesTG'
 import AddStories from './Component/Tourist/AddStories'
-
+import Community from './Component/Community/Community'
 import AboutUs from './Component/AboutUs/AboutUs'
 const stripePromise = loadStripe('pk_test_51QjKgaAwC1fImaEQKbRyeHqq3iw3ufeIP1FU4awqUbJeavujVfjrOmIsnFtx5Rb98KteM18htlYTO4caZztCMqkA00G1ifOgo6');
 
@@ -71,6 +71,10 @@ const router = createBrowserRouter([
       {
         path: '/aboutus',
         element: <AboutUs></AboutUs>
+      },
+      {
+        path: '/community',
+        element: <Community></Community>
       }
 
 

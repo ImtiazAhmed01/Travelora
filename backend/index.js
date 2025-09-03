@@ -1045,6 +1045,19 @@ async function run() {
             }
         });
 
+        app.get('/stories/all', async (req, res) => {
+            try {
+                const database = client.db("traveloraIJSA");
+                const collection = database.collection("stories");
+                const packages = await collection.find({}).toArray();
+
+                res.send(packages);
+            } catch (error) {
+                console.error("Error fetching all packages:", error);
+                res.status(500).send({ message: "Failed to fetch all packages" });
+            }
+        });
+
 
     }
     catch (error) {
