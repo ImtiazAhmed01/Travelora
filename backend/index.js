@@ -996,7 +996,54 @@ async function run() {
                 res.status(500).json({ message: 'Internal Server Error' });
             }
         });
+        app.post('/stories/add', async (req, res) => {
+            try {
+                console.log('Request Body:', req.body);
 
+                // Destructure the request body
+                const {
+                    title,
+                    text,
+                    userImage,
+                    userName,
+                    email,
+                    userRole,
+                    images = [], // Expect an array of image URLs or paths from the request body
+                    shareCount = 0,
+                    reactCount = 0
+                } = req.body;
+
+                // Parse the images array if it comes as a JSON string
+                const parsedImages = typeof images === 'string' ? JSON.parse(images) : images;
+
+                // Create the story object
+                const story = {
+                    title,
+                    text,
+                    userImage,
+                    userName,
+                    email,
+                    userRole,
+                    shareCount: parseInt(shareCount, 10),
+                    reactCount: parseInt(reactCount, 10),
+                    images: parsedImages,
+                    createdAt: new Date(),
+                };
+
+                const database = client.db('traveloraIJSA');
+                const collection = database.collection('stories');
+                const result = await collection.insertOne(story);
+
+                if (result.acknowledged) {
+                    res.status(200).json({ message: 'Story added successfully', story });
+                } else {
+                    res.status(500).json({ message: 'Failed to add story' });
+                }
+            } catch (error) {
+                console.error('Error adding story:', error);
+                res.status(500).json({ message: 'Error adding story', error });
+            }
+        });
 
 
     }
